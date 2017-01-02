@@ -1,11 +1,8 @@
-let roleHarvester = require('role.harvester');
-let roleUpgrader = require('role.upgrader');
-let roleBuilder = require('role.builder');
-let roleRepairer = require('role.repairer');
-let roleCarrier = require('role.carrier');
-let roleDefender = require('role.defender');
+
 let roleTower = require('role.tower');
 let roomManager = require('roomManager');
+
+require('prototype.creep')();
 
 module.exports.loop = function () {
 
@@ -34,23 +31,13 @@ module.exports.loop = function () {
     Memory.creepTypes.builders = [];
     Memory.creepTypes.carriers = [];
     Memory.creepTypes.defenders = [];
-
-    const roles = {
-        harvester: roleHarvester,
-        upgrader: roleUpgrader,
-        repairer: roleRepairer,
-        builder: roleBuilder,
-        carrier: roleCarrier,
-        defender: roleDefender
-    };
+    Memory.creepTypes.siegers = [];
 
     /**
      * Run roles on each creep and push creep types into appropriate memory locations for easy access through Memory tab
      */
-    for (let name in Game.creeps) {
-        let creep = Game.creeps[name];
-        roles[creep.memory.role].run(creep);
-        Memory.creepTypes[creep.memory.role + 's'].push(creep);
+    for (let creep in Game.creeps) {
+        Game.creeps[creep].runRole();
     }
 
     /**

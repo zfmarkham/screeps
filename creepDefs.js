@@ -38,7 +38,7 @@ let defs = [
 
         UPGRADER: {
             BODY: [WORK, CARRY, CARRY, CARRY, MOVE],
-            MIN: 1,
+            MIN: 2,
             MAX: undefined, // RCL * 2
             COST: 300
         },
@@ -79,7 +79,7 @@ let defs = [
 
         UPGRADER: {
             BODY: [WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE],
-            MIN: 1,
+            MIN: 2,
             MAX: undefined, // RCL * 2
             COST: 450
         },
