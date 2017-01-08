@@ -1,6 +1,5 @@
 let task = {
-    upgrade: require('task.upgrade').upgrade,
-    resupply: require('task.resupply').resupply
+    upgrade: require('task.upgrade').upgrade
 };
 
 let roleUpgrader = {
@@ -10,7 +9,7 @@ let roleUpgrader = {
     {
         if (creep.carry.energy == 0)
         {
-            task.resupply(creep);
+            creep.getEnergy();
         }
         else
         {

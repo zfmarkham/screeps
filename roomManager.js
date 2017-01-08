@@ -6,22 +6,22 @@ let creepDefs = require('creepDefs');
 
 
 const calculateMinCreepAmount = function(room, role) {
-
+    
     switch (role)
     {
         case 'CARRIER':
-            // Need a carrier if there are dropped resources or a container with energy in
-            return room.find(FIND_DROPPED_ENERGY).length > 0 || room.find(FIND_STRUCTURES, {filter: (s) => s.structureType == STRUCTURE_CONTAINER && s.energy > 0});
+            // Need a carrier if there are harvesters
+            return _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester').length;
             break;
 
         case 'BUILDER':
             // Need builder if there's a construction site
-            return room.find(FIND_MY_CONSTRUCTION_SITES).length > 0;
+            return Math.min(1, Math.floor(room.find(FIND_MY_CONSTRUCTION_SITES).length / 3));
             break;
 
         case 'REPAIRER':
             // Need repairer if there's more than just the spawner and room controller
-            return room.find(FIND_MY_STRUCTURES).length > 2;
+            return room.find(FIND_STRUCTURES).length > 2;
             break;
     }
 };
@@ -49,11 +49,11 @@ let roomManager = {
         {
             let creepDef = creepDefs[creepLevel][def];
             let role = def;
-
+            
             let creeps = room.find(FIND_MY_CREEPS, {filter: (c) => c.memory.role == role.toLowerCase()});
-
+            
             let creepTypeMin = creepDef.MIN || calculateMinCreepAmount(room, role);
-
+            
             if (creeps.length < creepTypeMin && room.energyAvailable >= creepDef.COST)
             {
                 let spawn = room.find(FIND_STRUCTURES, {filter: (s) => s.structureType == STRUCTURE_SPAWN})[0];

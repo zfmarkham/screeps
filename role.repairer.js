@@ -1,6 +1,5 @@
 let task = {
-    repair: require('task.repair').repair,
-    resupply: require('task.resupply').resupply
+    repair: require('task.repair').repair
 };
 
 let roleRepairer = {
@@ -11,7 +10,7 @@ let roleRepairer = {
         if (creep.carry.energy == 0)
         {
             delete creep.memory.repairTarget;
-            task.resupply(creep);
+            creep.getEnergy();
         }
         else
         {

@@ -3,14 +3,16 @@
  */
 
 let task = {
-    repair: require('task.repair').repair
+    repair: require('task.repair').repair,
+    attack: require('task.attack').attack
 };
 
 let roleTower = {
 
-    /** @param {Tower} tower **/
+    /** @param {STRUCTURE_TOWER} tower **/
     run: function(tower) {
 
+        task.attack(tower);
         task.repair(tower);
     }
 };

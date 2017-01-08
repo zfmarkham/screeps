@@ -1,6 +1,5 @@
 let task = {
-    build: require('task.build').build,
-    resupply: require('task.resupply').resupply
+    build: require('task.build').build
 };
 
 let roleBuilder = {
@@ -11,7 +10,7 @@ let roleBuilder = {
 
         if (creep.carry.energy == 0)
         {
-            task.resupply(creep);
+            creep.getEnergy();
         }
         else
         {

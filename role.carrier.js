@@ -8,20 +8,31 @@ let carrier = {
 
         if (creep.carry.energy == 0)
         {
-            let target = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES);
+            let energyStore = creep.pos.findClosestByRange(FIND_DROPPED_ENERGY, {filter: (source) => source.amount >= creep.carryCapacity});
 
-            if (target)
+            if (energyStore)
             {
-                if (creep.pickup(target) == ERR_NOT_IN_RANGE)
+                if (creep.pickup(energyStore) == ERR_NOT_IN_RANGE)
                 {
-                    if (creep.moveTo(target, {noPathFinding: true}) == ERR_NOT_FOUND)
+                    if (creep.moveTo(energyStore, {noPathFinding: true}) == ERR_NOT_FOUND)
                     {
-                        creep.moveTo(target);
+                        creep.moveTo(energyStore);
                     }
                 }
-                else
+            }
+            else
+            {
+                energyStore = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: (struct) =>  struct.structureType == STRUCTURE_CONTAINER && struct.store.energy > 100});
+
+                if (energyStore)
                 {
-                    creep.memory.carrying = true;
+                    if (creep.withdraw(energyStore, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
+                    {
+                        if (creep.moveTo(energyStore, {noPathFinding: true}) == ERR_NOT_FOUND)
+                        {
+                            creep.moveTo(energyStore);
+                        }
+                    }
                 }
             }
         }
@@ -30,7 +41,7 @@ let carrier = {
             // Find place to drop it off. Prioritise spawner, then extension, then containers
 
             let target;
-            let spawner = creep.room.find(FIND_STRUCTURES, {filter: (structure) => {return structure.structureType == STRUCTURE_SPAWN}})[0];
+            let spawner = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: (s) => {return s.structureType == STRUCTURE_SPAWN}});
 
             if (spawner.energy < spawner.energyCapacity)
             {
@@ -45,49 +56,43 @@ let carrier = {
                 return
             }
 
-            let extensions = creep.room.find(FIND_STRUCTURES, {filter: (structure) => {return structure.structureType == STRUCTURE_EXTENSION}});
-            extensions = _.filter(extensions, (ext) => ext.energy < ext.energyCapacity);
+            let extension = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: (s) => {return s.structureType == STRUCTURE_EXTENSION && s.energy < s.energyCapacity}});
 
-            if (extensions.length)
+            if (extension)
             {
-                target = extensions[0];
-                if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
+                if (creep.transfer(extension, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
                 {
-                    if (creep.moveTo(target, {noPathFinding: true}) == ERR_NOT_FOUND)
+                    if (creep.moveTo(extension, {noPathFinding: true}) == ERR_NOT_FOUND)
                     {
-                        creep.moveTo(target);
+                        creep.moveTo(extension);
                     }
                 }
                 return
             }
 
-            let towers = creep.room.find(FIND_STRUCTURES, {filter: (structure) => {return structure.structureType == STRUCTURE_TOWER}});
-            towers = _.filter(towers, (t) => t.energy < t.energyCapacity);
+            let tower = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: (s) => {return s.structureType == STRUCTURE_TOWER && s.energy < s.energyCapacity}});
 
-            if (towers.length)
+            if (tower)
             {
-                target = towers[0];
-                if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
+                if (creep.transfer(tower, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
                 {
-                    if (creep.moveTo(target, {noPathFinding: true}) == ERR_NOT_FOUND)
+                    if (creep.moveTo(tower, {noPathFinding: true}) == ERR_NOT_FOUND)
                     {
-                        creep.moveTo(target);
+                        creep.moveTo(tower);
                     }
                 }
                 return
             }
 
-            let containers = creep.room.find(FIND_STRUCTURES, {filter: (structure) => {return structure.structureType == STRUCTURE_CONTAINER}});
-            containers = _.filter(containers, (con) => con.store.energy < con.storeCapacity);
+            let container = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: (s) => {return s.structureType == STRUCTURE_CONTAINER && s.energy < s.energyCapacity}});
 
-            if (containers.length)
+            if (container)
             {
-                target = containers[0];
-                if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
+                if (creep.transfer(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
                 {
-                    if (creep.moveTo(target, {noPathFinding: true}) == ERR_NOT_FOUND)
+                    if (creep.moveTo(container, {noPathFinding: true}) == ERR_NOT_FOUND)
                     {
-                        creep.moveTo(target);
+                        creep.moveTo(container);
                     }
                 }
                 return

@@ -10,6 +10,20 @@ let build = {
     build: function(creep) {
 
         let buildSite = utils.findFirst(creep, FIND_CONSTRUCTION_SITES);
+        
+        if (Memory.priorityBuildSite)
+        {
+            let priorityBuildSite = Game.getObjectById(Memory.priorityBuildSite);
+            
+            if (priorityBuildSite instanceof ConstructionSite)
+            {
+                buildSite = priorityBuildSite
+            }
+            else
+            {
+                delete Memory.priorityBuildSite;
+            }
+        }
 
         if (buildSite)
         {
