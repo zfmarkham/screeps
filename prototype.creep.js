@@ -22,19 +22,26 @@ module.exports = function() {
         sieger: roleSieger
     };
 
-    Creep.prototype.setDestination = function(pos, posy) {
-
-        if (pos instanceof RoomPosition)
-        {
-            this.memory.destination = JSON.stringify({room: pos.roomName, x: pos.x, y: pos.y});
+    Object.defineProperty(Creep.prototype, 'destination', {
+        get: function() {
+            return JSON.stringify(this.memory.destination);
+        },
+        set: function(value) {
+            if (value instanceof RoomPosition)
+            {
+                this.memory.destination = JSON.stringify(value);
+            }
+            else if (typeof value === 'string')
+            {
+                let coords = value.split(',');
+                this.memory.destination = JSON.stringify(new RoomPosition(coords[0], coords[1], this.pos.roomName));
+            }
+            else
+            {
+                delete this.memory.destination;
+            }
         }
-        else if (typeof pos == 'number') {
-            this.memory.destination = JSON.stringify({x: pos, y: posy});
-        }
-        else {
-            this.memory.destination = pos;
-        }
-    };
+    });
 
     Creep.prototype.getEnergy = function() {
 
@@ -69,10 +76,12 @@ module.exports = function() {
 
     Creep.prototype.runRole = function() {
 
-        if (this.memory.destination){
-            
-            let dest = JSON.parse(this.memory.destination);
-            let pos = new RoomPosition(dest.x, dest.y, dest.room);
+        if (this.destination)
+        {
+            let dest = JSON.parse(this.destination);
+            console.log(`${dest.x}, ${dest.y}, ${dest.roomName}`);
+
+            let pos = new RoomPosition(dest.x, dest.y, dest.roomName);
             if (this.moveTo(pos, {noPathFinding: true, ignoreDestructibleStructures: true}) == ERR_NOT_FOUND)
             {
                 this.moveTo(pos, {ignoreDestructibleStructures: true});
@@ -81,7 +90,7 @@ module.exports = function() {
 
             if (this.pos.roomName == pos.roomName && this.pos.x == dest.x && this.pos.y == dest.y)
             {
-                delete this.memory.destination;
+                this.destination = undefined;
             }
 
         }

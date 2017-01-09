@@ -2,14 +2,12 @@
  * Created by zmark_000 on 29/12/2016.
  */
 
-let utils = require('utils');
-
 let build = {
 
 
     build: function(creep) {
 
-        let buildSite = utils.findFirst(creep, FIND_CONSTRUCTION_SITES);
+        let buildSite = creep.room.find(FIND_CONSTRUCTION_SITES);
         
         if (Memory.priorityBuildSite)
         {

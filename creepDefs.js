@@ -24,15 +24,15 @@ let defs = [
     {
         HARVESTER: {
             BODY: [MOVE, WORK, WORK],
-            MIN: 2,
+            MIN: 1,
             MAX: undefined, // Room energy source count
             COST: 250
         },
 
         CARRIER: {
             BODY: [MOVE, MOVE, CARRY, CARRY, CARRY, CARRY],
-            MIN: undefined,
-            MAX: undefined, // 2 * Harvester count
+            MIN: undefined, // Harvester count > 0
+            MAX: undefined, // Harvester count
             COST: 300
         },
 
@@ -45,7 +45,7 @@ let defs = [
 
         BUILDER: {
             BODY: [WORK, CARRY, CARRY, MOVE, MOVE],
-            MIN: 0, // Construction sites > 0
+            MIN: undefined, // Construction sites > 0
             MAX: 2,
             COST: 300
         },
@@ -65,15 +65,15 @@ let defs = [
     {
         HARVESTER: {
             BODY: [MOVE, WORK, WORK, WORK, WORK, WORK],
-            MIN: 2,
+            MIN: 1,
             MAX: undefined, // Room energy source count
             COST: 550
         },
 
         CARRIER: {
             BODY: [MOVE, MOVE, CARRY, CARRY, CARRY, CARRY],
-            MIN: undefined,
-            MAX: undefined, // 2 * Harvester count
+            MIN: undefined, // Harvester count > 0
+            MAX: undefined, // Harvester count
             COST: 300
         },
 
