@@ -27,8 +27,13 @@ let repair = {
         }
         else
         {
-            let target = (object.memory && object.memory.repairTarget) ? Game.getObjectById(object.memory.repairTarget) : _.sortBy(object.room.find(FIND_STRUCTURES, {filter: (s) => s.hits < s.hitsMax}), 'hits')[0];
-            if (target.structureType == STRUCTURE_WALL && target.hits > 50000) target = undefined;
+            let structures = _.sortBy(object.room.find(FIND_STRUCTURES, {filter: (s) => s.hits < s.hitsMax}), 'hits');
+            let target = (object.memory && object.memory.repairTarget) ? Game.getObjectById(object.memory.repairTarget) : structures.shift();
+
+            while(structures.length > 0 && target.structureType == STRUCTURE_WALL && target.hits > 50000)
+            {
+                target = structures.shift();
+            }
 
             if (target)
             {

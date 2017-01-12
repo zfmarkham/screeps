@@ -80,14 +80,14 @@ let defs = [
         UPGRADER: {
             BODY: [WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE],
             MIN: 2,
-            MAX: undefined, // RCL * 2
+            MAX: 2, // RCL * 2
             COST: 450
         },
 
         BUILDER: {
             BODY: [WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE],
-            MIN: 0, // Construction sites > 0
-            MAX: 2,
+            MIN: undefined, // Construction sites > 0
+            MAX: 0,
             COST: 450
         },
 

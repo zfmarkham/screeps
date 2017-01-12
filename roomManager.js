@@ -10,18 +10,40 @@ const calculateMinCreepAmount = function(room, role) {
     switch (role)
     {
         case 'CARRIER':
-            // Need a carrier if there are harvesters
-            return _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester').length;
+            // Need a carrier if there are ANY harvesters
+            return _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester').length > 0;
             break;
 
         case 'BUILDER':
-            // Need builder if there's a construction site
-            return Math.min(1, Math.floor(room.find(FIND_MY_CONSTRUCTION_SITES).length / 3));
+            // Need builder if there  are ANY construction sites
+            return room.find(FIND_MY_CONSTRUCTION_SITES).length > 0;
             break;
 
         case 'REPAIRER':
             // Need repairer if there's more than just the spawner and room controller
             return room.find(FIND_STRUCTURES).length > 2;
+            break;
+
+        case 'DEFENDER':
+            return room.find(FIND_FLAGS, {filter: (f) => f.name.includes('ArcherSpot')}).length;
+            break;
+    }
+};
+
+const calculateMaxCreepAmount = function(room, role) {
+
+    switch (role)
+    {
+        case 'HARVESTER':
+            return room.find(FIND_SOURCES).length;
+            break;
+
+        case 'CARRIER':
+            return _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester').length;
+            break;
+
+        case 'DEFENDER':
+            return room.find(FIND_FLAGS, {filter: (f) => f.name.includes('ArcherSpot')}).length;
             break;
     }
 };
@@ -45,6 +67,7 @@ let roomManager = {
 
         let creepLevel = Math.min(1, Math.floor(room.find(FIND_STRUCTURES, {filter: (s) => s.structureType == STRUCTURE_EXTENSION}).length / 5));
 
+        let name = undefined;
         for (let def in creepDefs[creepLevel])
         {
             let creepDef = creepDefs[creepLevel][def];
@@ -54,14 +77,46 @@ let roomManager = {
             
             let creepTypeMin = creepDef.MIN || calculateMinCreepAmount(room, role);
             
-            if (creeps.length < creepTypeMin && room.energyAvailable >= creepDef.COST)
+            if (creeps.length < creepTypeMin)
             {
-                let spawn = room.find(FIND_STRUCTURES, {filter: (s) => s.structureType == STRUCTURE_SPAWN})[0];
-                let name = spawn.createCreep(creepDef.BODY, undefined, {role: role.toLowerCase()});
-                if (typeof name == 'string')
+                if (room.energyAvailable >= creepDef.COST)
                 {
-                    console.log(`Spawning ${role} ${name}`);
-                    return
+                    let spawn = room.find(FIND_STRUCTURES, {filter: (s) => s.structureType == STRUCTURE_SPAWN})[0];
+                    name = spawn.createCreep(creepDef.BODY, undefined, {role: role.toLowerCase()});
+
+                    if (typeof name == 'string')
+                    {
+                        console.log(`Spawning ${role} ${name}`);
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (name === undefined)
+        {
+            for (let def in creepDefs[creepLevel])
+            {
+                let creepDef = creepDefs[creepLevel][def];
+                let role = def;
+
+                let creeps = room.find(FIND_MY_CREEPS, {filter: (c) => c.memory.role == role.toLowerCase()});
+
+                let creepTypeMax = creepDef.MAX || calculateMaxCreepAmount(room, role);
+                //console.log(`role: ${role} type: ${creepTypeMax}`)
+                if (creeps.length < creepTypeMax)
+                {
+                    if (room.energyAvailable >= creepDef.COST)
+                    {
+                        let spawn = room.find(FIND_STRUCTURES, {filter: (s) => s.structureType == STRUCTURE_SPAWN})[0];
+                        name = spawn.createCreep(creepDef.BODY, undefined, {role: role.toLowerCase()});
+
+                        if (typeof name == 'string')
+                        {
+                            console.log(`Spawning ${role} ${name}`);
+                            break;
+                        }
+                    }
                 }
             }
         }

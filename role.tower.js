@@ -3,17 +3,28 @@
  */
 
 let task = {
-    repair: require('task.repair').repair,
-    attack: require('task.attack').attack
+    repair: require('task.repair').repair
 };
 
 let roleTower = {
 
-    /** @param {STRUCTURE_TOWER} tower **/
     run: function(tower) {
 
-        task.attack(tower);
-        task.repair(tower);
+        let hostileCreep = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+        let injuredCreep = tower.pos.findClosestByRange(FIND_MY_CREEPS, {filter: (c) => c.hits < c.hitsMax});
+
+        if (hostileCreep)
+        {
+            tower.attack(hostileCreep);
+        }
+        else if (injuredCreep)
+        {
+            tower.heal(injuredCreep);
+        }
+        else
+        {
+            task.repair(tower);
+        }
     }
 };
 

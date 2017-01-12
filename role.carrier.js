@@ -8,7 +8,7 @@ let carrier = {
 
         if (creep.carry.energy == 0)
         {
-            let energyStore = creep.pos.findClosestByRange(FIND_DROPPED_ENERGY, {filter: (source) => source.amount >= creep.carryCapacity});
+            let energyStore = creep.pos.findClosestByRange(FIND_DROPPED_ENERGY, {filter: (source) => source.amount >= creep.carryCapacity / 2});
 
             if (energyStore)
             {
@@ -70,7 +70,7 @@ let carrier = {
                 return
             }
 
-            let tower = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: (s) => {return s.structureType == STRUCTURE_TOWER && s.energy < s.energyCapacity}});
+            let tower = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: (s) => {return s.structureType == STRUCTURE_TOWER && s.energy / s.energyCapacity < 0.5}});
 
             if (tower)
             {
@@ -84,15 +84,30 @@ let carrier = {
                 return
             }
 
-            let container = creep.pos.findClosestByRange(FIND_STRUCTURES, {filter: (s) => {return s.structureType == STRUCTURE_CONTAINER && s.energy < s.energyCapacity}});
+            let containers = creep.room.find(FIND_STRUCTURES, {filter: (s) => {return s.structureType == STRUCTURE_CONTAINER && s.store.energy / s.storeCapacity < 0.7}});
 
-            if (container)
+            containers = _.sortBy(containers, 'store.energy');
+            if (containers[0])
             {
-                if (creep.transfer(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
+                if (creep.transfer(containers[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
                 {
-                    if (creep.moveTo(container, {noPathFinding: true}) == ERR_NOT_FOUND)
+                    if (creep.moveTo(containers[0], {noPathFinding: true}) == ERR_NOT_FOUND)
                     {
-                        creep.moveTo(container);
+                        creep.moveTo(containers[0]);
+                    }
+                }
+                return
+            }
+
+            let storage = creep.room.storage;
+            console.log(storage);
+            if (storage)
+            {
+                if (creep.transfer(storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
+                {
+                    if (creep.moveTo(storage, {noPathFinding: true}) == ERR_NOT_FOUND)
+                    {
+                        creep.moveTo(storage);
                     }
                 }
                 return

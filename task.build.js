@@ -7,7 +7,7 @@ let build = {
 
     build: function(creep) {
 
-        let buildSite = creep.room.find(FIND_CONSTRUCTION_SITES);
+        let buildSite = creep.room.find(FIND_CONSTRUCTION_SITES)[0];
         
         if (Memory.priorityBuildSite)
         {

@@ -24,7 +24,7 @@ module.exports = function() {
 
     Object.defineProperty(Creep.prototype, 'destination', {
         get: function() {
-            return JSON.stringify(this.memory.destination);
+            return this.memory.destination;
         },
         set: function(value) {
             if (value instanceof RoomPosition)
@@ -34,7 +34,8 @@ module.exports = function() {
             else if (typeof value === 'string')
             {
                 let coords = value.split(',');
-                this.memory.destination = JSON.stringify(new RoomPosition(coords[0], coords[1], this.pos.roomName));
+                value = new RoomPosition(Number(coords[0]), Number(coords[1]), this.pos.roomName);
+                this.memory.destination = JSON.stringify(value);
             }
             else
             {
